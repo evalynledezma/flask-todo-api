@@ -35,6 +35,24 @@ def hello():
     return "Hello Root"
 
 
+@app.route('/api/create-todo', methods=['POST'])
+def add_todo():
+    title = request.json['title']
+    done = request.json['done']
+    new_todo = Todo(title, done)
+    db.session.add(new_todo)
+    db.session.commit()
+    todo = Todo.query.get(new_todo.id)
+    return todo_schema.jsonify(todo)
+
+
+@app.route('/api/get-all-todos', methods=['GET'])
+def get_todos():
+    all_todos = Todo.query.all()
+    result = todos_schema.dump(all_todos)
+    return jsonify(result)
+
+
 if __name__ == "__main__":
     app.debug = True
     app.run()
